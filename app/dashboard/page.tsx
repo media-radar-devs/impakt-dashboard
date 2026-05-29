@@ -5,7 +5,8 @@ import { fetchFromVarys, getSessionToken } from "../lib/session";
 type UserProfile = {
   id: string;
   email: string;
-  name: string | null;
+  first_name: string | null;
+  last_name: string | null;
   role: string;
   is_enabled: boolean;
   search_terms: string[];
@@ -28,12 +29,14 @@ export default async function DashboardPage() {
   }
 
   const user = (await res.json()) as UserProfile;
+  const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ") || null;
+  const greeting = fullName ?? user.email;
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
       <div className="w-full max-w-md space-y-6">
         <header>
-          <h1 className="text-2xl font-semibold">Hola, {user.name ?? user.email}</h1>
+          <h1 className="text-2xl font-semibold">Hola, {greeting}</h1>
           <p className="text-sm text-zinc-600">Tu cuenta de Impakt está conectada al bot.</p>
         </header>
 

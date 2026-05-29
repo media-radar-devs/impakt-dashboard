@@ -7,6 +7,8 @@ type Props = { email: string; linkToken: string };
 
 export default function RegisterForm({ email, linkToken }: Props) {
   const router = useRouter();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +21,13 @@ export default function RegisterForm({ email, linkToken }: Props) {
       const res = await fetch("/api/proxy/auth/signup", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, password, link_token: linkToken }),
+        body: JSON.stringify({
+          email,
+          password,
+          first_name: firstName,
+          last_name: lastName,
+          link_token: linkToken,
+        }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -42,6 +50,37 @@ export default function RegisterForm({ email, linkToken }: Props) {
         </label>
         <div className="mt-1 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700">
           {email}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label htmlFor="first_name" className="block text-xs uppercase tracking-wide text-zinc-500">
+            Nombre
+          </label>
+          <input
+            id="first_name"
+            type="text"
+            required
+            autoComplete="given-name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+          />
+        </div>
+        <div>
+          <label htmlFor="last_name" className="block text-xs uppercase tracking-wide text-zinc-500">
+            Apellido
+          </label>
+          <input
+            id="last_name"
+            type="text"
+            required
+            autoComplete="family-name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+          />
         </div>
       </div>
 
