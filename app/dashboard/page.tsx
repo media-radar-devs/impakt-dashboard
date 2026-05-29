@@ -9,6 +9,8 @@ type UserProfile = {
   last_name: string | null;
   role: string;
   is_enabled: boolean;
+  rejected_at: string | null;
+  rejection_reason: string | null;
   search_terms: string[];
 };
 
@@ -40,7 +42,23 @@ export default async function DashboardPage() {
           <p className="text-sm text-zinc-600">Tu cuenta de Impakt está conectada al bot.</p>
         </header>
 
-        {!user.is_enabled && (
+        {!user.is_enabled && user.rejected_at && (
+          <div className="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-900">
+            <p className="font-medium">Tu solicitud fue rechazada.</p>
+            {user.rejection_reason &&
+              !user.rejection_reason.startsWith("(pending") && (
+                <p className="mt-1">
+                  Motivo: <span className="font-medium">{user.rejection_reason}</span>
+                </p>
+              )}
+            <p className="mt-1">
+              Si crees que es un error, envía <code className="rounded bg-red-100 px-1">/register</code>
+              al bot de Telegram para volver a aplicar.
+            </p>
+          </div>
+        )}
+
+        {!user.is_enabled && !user.rejected_at && (
           <div className="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             <p className="font-medium">Tu cuenta está pendiente de aprobación.</p>
             <p className="mt-1">
