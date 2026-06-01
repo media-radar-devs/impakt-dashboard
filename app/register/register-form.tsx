@@ -45,11 +45,8 @@ export default function RegisterForm({ email, linkToken }: Props) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <label htmlFor="email-display" className="eyebrow block">
-          Email
-        </label>
+        <p className="eyebrow block">Email</p>
         <div
-          id="email-display"
           className="mt-1 rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-muted"
         >
           {email}

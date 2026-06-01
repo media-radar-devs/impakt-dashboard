@@ -49,11 +49,9 @@ async function forward(request: NextRequest, ctx: RouteContext): Promise<NextRes
       body,
       cache: "no-store",
     });
-  } catch (err) {
-    return NextResponse.json(
-      { detail: `proxy_fetch_failed: ${(err as Error).message}` },
-      { status: 502 },
-    );
+  } catch (err: unknown) {
+    console.error("[auth-proxy] upstream fetch failed:", err);
+    return NextResponse.json({ detail: "upstream_unavailable" }, { status: 502 });
   }
 
   const responseText = await upstream.text();

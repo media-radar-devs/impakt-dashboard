@@ -31,6 +31,7 @@ export default function TermsEditor({
   async function addTerm() {
     const term = value.trim();
     if (!term || pending) return;
+    if (terms.includes(term)) { setValue(""); return; }
 
     setError(null);
     setPending(true);

@@ -3,6 +3,7 @@
 const formatter = new Intl.DateTimeFormat("es-CL", {
   dateStyle: "medium",
   timeStyle: "short",
+  timeZone: "America/Santiago",
 });
 
 export function formatDate(value: string | null): string {
