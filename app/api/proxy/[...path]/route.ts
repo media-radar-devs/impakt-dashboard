@@ -25,6 +25,20 @@ async function forward(request: NextRequest, ctx: RouteContext): Promise<NextRes
   }
   const { path } = await ctx.params;
   const subpath = path.join("/");
+
+  // The cookie-setting auth flow must only go through the dedicated auth proxy.
+  // Refuse auth paths here defensively, in case routing precedence ever changes.
+  if (subpath === "auth" || subpath.startsWith("auth/")) {
+    return NextResponse.json({ detail: "not_found" }, { status: 404 });
+  }
+
+  // Defense in depth: all dashboard data routes require auth, so the proxy has
+  // no legitimate anonymous use. Reject before forwarding to the backend.
+  const sessionCookie = request.cookies.get(SESSION_COOKIE);
+  if (!sessionCookie) {
+    return NextResponse.json({ detail: "unauthorized" }, { status: 401 });
+  }
+
   const search = request.nextUrl.search;
   const target = `${VARYS_URL}/api/${subpath}${search}`;
 
@@ -32,10 +46,7 @@ async function forward(request: NextRequest, ctx: RouteContext): Promise<NextRes
   const contentType = request.headers.get("content-type");
   if (contentType) headers["content-type"] = contentType;
 
-  const sessionCookie = request.cookies.get(SESSION_COOKIE);
-  if (sessionCookie) {
-    headers["authorization"] = `Bearer ${sessionCookie.value}`;
-  }
+  headers["authorization"] = `Bearer ${sessionCookie.value}`;
 
   const body = request.method === "GET" || request.method === "HEAD"
     ? undefined
@@ -49,11 +60,9 @@ async function forward(request: NextRequest, ctx: RouteContext): Promise<NextRes
       body,
       cache: "no-store",
     });
-  } catch (err) {
-    return NextResponse.json(
-      { detail: `proxy_fetch_failed: ${(err as Error).message}` },
-      { status: 502 },
-    );
+  } catch (err: unknown) {
+    console.error("[proxy] upstream fetch failed:", err);
+    return NextResponse.json({ detail: "upstream_unavailable" }, { status: 502 });
   }
 
   const responseText = await upstream.text();
