@@ -7,8 +7,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
+import { SESSION_COOKIE } from "../../../../lib/session";
+
 const VARYS_URL = process.env.VARYS_URL;
-const SESSION_COOKIE = "impakt_session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days; refresh on login
 
 if (!VARYS_URL) {
@@ -48,11 +49,9 @@ async function forward(request: NextRequest, ctx: RouteContext): Promise<NextRes
       body,
       cache: "no-store",
     });
-  } catch (err) {
-    return NextResponse.json(
-      { detail: `proxy_fetch_failed: ${(err as Error).message}` },
-      { status: 502 },
-    );
+  } catch (err: unknown) {
+    console.error("[auth-proxy] upstream fetch failed:", err);
+    return NextResponse.json({ detail: "upstream_unavailable" }, { status: 502 });
   }
 
   const responseText = await upstream.text();

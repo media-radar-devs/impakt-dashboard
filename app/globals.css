@@ -1,26 +1,46 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Impakt brand tokens */
+  --impakt-yellow: #f5c518; /* primary accent / active nav / key actions / highlight (approx. sample of deck yellow) */
+  --impakt-ink: #0e0e0e; /* dark surfaces e.g. sidebar; primary text on light */
+  --impakt-paper: #f2eee3; /* warm off-white page background */
+  --impakt-red: #da3a2a; /* critical / negative / destructive */
+  --impakt-muted: #8a8a8a; /* secondary text */
+  --impakt-border: #e3e0d7; /* hairline borders on light surfaces */
+
+  /* Brand theme: paper background, ink text */
+  --background: var(--impakt-paper);
+  --foreground: var(--impakt-ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-impakt-yellow: var(--impakt-yellow);
+  --color-impakt-ink: var(--impakt-ink);
+  --color-impakt-paper: var(--impakt-paper);
+  --color-impakt-red: var(--impakt-red);
+  --color-impakt-muted: var(--impakt-muted);
+  --color-impakt-border: var(--impakt-border);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-anton);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Tracked uppercase eyebrow label, reused across pages */
+.eyebrow {
+  font-family: var(--font-geist-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.7rem;
+  color: var(--impakt-muted);
 }
