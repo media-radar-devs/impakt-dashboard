@@ -45,17 +45,17 @@ export default function RegisterForm({ email, linkToken }: Props) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <label className="block text-xs uppercase tracking-wide text-zinc-500">
+        <label className="eyebrow block">
           Email
         </label>
-        <div className="mt-1 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700">
+        <div className="mt-1 rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-muted">
           {email}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label htmlFor="first_name" className="block text-xs uppercase tracking-wide text-zinc-500">
+          <label htmlFor="first_name" className="eyebrow block">
             Nombre
           </label>
           <input
@@ -65,11 +65,11 @@ export default function RegisterForm({ email, linkToken }: Props) {
             autoComplete="given-name"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+            className="mt-1 w-full rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-ink focus:border-impakt-ink focus:outline-none"
           />
         </div>
         <div>
-          <label htmlFor="last_name" className="block text-xs uppercase tracking-wide text-zinc-500">
+          <label htmlFor="last_name" className="eyebrow block">
             Apellido
           </label>
           <input
@@ -79,13 +79,13 @@ export default function RegisterForm({ email, linkToken }: Props) {
             autoComplete="family-name"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+            className="mt-1 w-full rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-ink focus:border-impakt-ink focus:outline-none"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-xs uppercase tracking-wide text-zinc-500">
+        <label htmlFor="password" className="eyebrow block">
           Contraseña
         </label>
         <input
@@ -96,18 +96,18 @@ export default function RegisterForm({ email, linkToken }: Props) {
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+          className="mt-1 w-full rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-ink focus:border-impakt-ink focus:outline-none"
         />
       </div>
 
       {error && (
-        <p className="text-sm text-red-600">{error}</p>
+        <p className="text-sm text-impakt-red">{error}</p>
       )}
 
       <button
         type="submit"
         disabled={submitting}
-        className="w-full rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        className="w-full rounded-md bg-impakt-ink px-4 py-2 text-sm font-medium text-impakt-paper hover:bg-impakt-yellow hover:text-impakt-ink disabled:opacity-50 disabled:hover:bg-impakt-ink disabled:hover:text-impakt-paper"
       >
         {submitting ? "Creando…" : "Crear cuenta"}
       </button>
