@@ -1,10 +1,9 @@
 import { redirect } from "next/navigation";
 
 import { fetchFromVarys, getSessionToken } from "../../lib/session";
+import type { TermsResponse } from "../_components/types";
 import { PageHeader } from "../_components/ui";
 import TermsEditor from "./terms-editor";
-
-type TermsResponse = { terms: string[] };
 
 export default async function TermsPage() {
   const token = await getSessionToken();

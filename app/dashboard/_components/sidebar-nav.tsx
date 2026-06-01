@@ -23,7 +23,10 @@ export default function SidebarNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-row gap-1 sm:flex-col">
+    <nav
+      aria-label="Navegación principal"
+      className="flex flex-row gap-1 sm:flex-col"
+    >
       {NAV_ITEMS.map((item) => {
         const active = isActive(pathname, item.href);
         const base =

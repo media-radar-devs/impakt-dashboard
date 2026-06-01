@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-type TermsResponse = { terms: string[] };
+import type { TermsResponse } from "../_components/types";
 
 // Maps backend `detail` codes to Chilean-Spanish, user-facing messages.
 const ERROR_MESSAGES: Record<string, string> = {

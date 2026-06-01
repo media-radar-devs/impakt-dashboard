@@ -30,9 +30,7 @@ export default async function DashboardPage() {
   }
 
   const user = (await res.json()) as UserProfile;
-  const fullName =
-    [user.first_name, user.last_name].filter(Boolean).join(" ") || null;
-  const greeting = user.first_name ?? fullName ?? user.email;
+  const greeting = user.first_name ?? user.last_name ?? user.email;
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -72,21 +70,23 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      <Card className="divide-y divide-impakt-border p-0">
-        <Row label="Email" value={user.email} />
-        <Row label="Rol" value={user.role} />
-        <Row
-          label="Estado"
-          value={user.is_enabled ? "Activa" : "Pendiente de aprobación"}
-        />
-        <Row
-          label="Términos"
-          value={
-            user.search_terms.length
-              ? user.search_terms.join(", ")
-              : "(ninguno)"
-          }
-        />
+      <Card className="p-0">
+        <dl className="divide-y divide-impakt-border">
+          <Row label="Email" value={user.email} />
+          <Row label="Rol" value={user.role} />
+          <Row
+            label="Estado"
+            value={user.is_enabled ? "Activa" : "Pendiente de aprobación"}
+          />
+          <Row
+            label="Términos"
+            value={
+              user.search_terms.length
+                ? user.search_terms.join(", ")
+                : "(ninguno)"
+            }
+          />
+        </dl>
       </Card>
 
       {user.is_enabled && (

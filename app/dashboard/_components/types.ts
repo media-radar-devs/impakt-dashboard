@@ -11,6 +11,8 @@ export type Article = {
   content: string | null;
 };
 
+export type TermsResponse = { terms: string[] };
+
 export type Match = {
   id: string;
   matched_term: string | null;

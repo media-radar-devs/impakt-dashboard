@@ -29,39 +29,47 @@ export default function NewsSearch({
   useEffect(() => {
     const trimmed = query.trim();
     const controller = new AbortController();
+    // Guards stale setState after this effect run is torn down (abort), so a
+    // newer request can't be clobbered by an in-flight older one.
+    let cancelled = false;
 
     // Empty query resets to the server-rendered list — done inside the timer so
     // the effect never calls setState synchronously (cascading-render lint).
     const timer = setTimeout(async () => {
       if (!trimmed) {
-        setArticles(initialArticles);
-        setError(null);
-        setLoading(false);
+        if (!cancelled) {
+          setArticles(initialArticles);
+          setError(null);
+          setLoading(false);
+        }
         return;
       }
 
-      setLoading(true);
-      setError(null);
+      if (!cancelled) {
+        setLoading(true);
+        setError(null);
+      }
       try {
         const res = await fetch(
           `/api/proxy/me/news?q=${encodeURIComponent(trimmed)}&limit=30`,
           { signal: controller.signal },
         );
         if (!res.ok) {
-          setError("No pudimos cargar las noticias.");
+          if (!cancelled) setError("No pudimos cargar las noticias.");
           return;
         }
         const body = (await res.json()) as Article[];
-        setArticles(body);
+        if (!cancelled) setArticles(body);
       } catch (err) {
         if ((err as Error).name === "AbortError") return; // stale request
-        setError("No pudimos cargar las noticias.");
+        if (!cancelled) setError("No pudimos cargar las noticias.");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }, DEBOUNCE_MS);
 
     return () => {
+      cancelled = true;
       controller.abort();
       clearTimeout(timer);
     };
@@ -85,9 +93,11 @@ export default function NewsSearch({
         {error && <p className="text-sm text-impakt-red">{error}</p>}
       </div>
 
-      {!error && articles.length === 0 ? (
+      {!loading && !error && articles.length === 0 && (
         <EmptyState>Sin resultados para tu búsqueda.</EmptyState>
-      ) : (
+      )}
+
+      {!loading && articles.length > 0 && (
         <ul className="space-y-3">
           {articles.map((article) => (
             <li key={article.id}>
