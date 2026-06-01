@@ -13,7 +13,7 @@ export default async function RegisterPage({
     return (
       <main className="flex flex-1 items-center justify-center px-6 py-16">
         <div className="max-w-md w-full space-y-4 text-center">
-          <h1 className="text-4xl leading-none tracking-tight font-[family-name:var(--font-display)]">
+          <h1 className="text-4xl leading-none tracking-tight font-display">
             Falta el enlace de registro
           </h1>
           <p className="text-sm text-impakt-muted">
@@ -31,7 +31,7 @@ export default async function RegisterPage({
     <main className="flex flex-1 items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
         <p className="eyebrow mb-2">Registro</p>
-        <h1 className="mb-1 text-4xl leading-none tracking-tight font-[family-name:var(--font-display)]">
+        <h1 className="mb-1 text-4xl leading-none tracking-tight font-display">
           Crea tu cuenta
         </h1>
         <p className="mb-6 text-sm text-impakt-muted">

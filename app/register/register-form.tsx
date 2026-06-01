@@ -45,10 +45,13 @@ export default function RegisterForm({ email, linkToken }: Props) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <label className="eyebrow block">
+        <label htmlFor="email-display" className="eyebrow block">
           Email
         </label>
-        <div className="mt-1 rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-muted">
+        <div
+          id="email-display"
+          className="mt-1 rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-muted"
+        >
           {email}
         </div>
       </div>
@@ -65,7 +68,7 @@ export default function RegisterForm({ email, linkToken }: Props) {
             autoComplete="given-name"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="mt-1 w-full rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-ink focus:border-impakt-ink focus:outline-none"
+            className="mt-1 w-full rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-ink focus:border-impakt-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-impakt-yellow focus-visible:ring-offset-1"
           />
         </div>
         <div>
@@ -79,7 +82,7 @@ export default function RegisterForm({ email, linkToken }: Props) {
             autoComplete="family-name"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="mt-1 w-full rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-ink focus:border-impakt-ink focus:outline-none"
+            className="mt-1 w-full rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-ink focus:border-impakt-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-impakt-yellow focus-visible:ring-offset-1"
           />
         </div>
       </div>
@@ -96,7 +99,7 @@ export default function RegisterForm({ email, linkToken }: Props) {
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-ink focus:border-impakt-ink focus:outline-none"
+          className="mt-1 w-full rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-ink focus:border-impakt-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-impakt-yellow focus-visible:ring-offset-1"
         />
       </div>
 

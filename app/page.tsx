@@ -5,7 +5,7 @@ export default function Home() {
     <main className="flex flex-1 items-center justify-center px-6 py-16">
       <div className="w-full max-w-md text-center">
         <p className="eyebrow mb-4">Monitoreo de medios</p>
-        <h1 className="text-6xl leading-none tracking-tight font-[family-name:var(--font-display)]">
+        <h1 className="text-6xl leading-none tracking-tight font-display">
           <span className="bg-impakt-yellow px-2 text-impakt-ink">Impakt</span>
         </h1>
         <p className="mt-4 text-sm text-impakt-muted">

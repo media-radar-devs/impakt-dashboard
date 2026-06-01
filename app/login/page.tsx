@@ -5,7 +5,7 @@ export default function LoginPage() {
     <main className="flex flex-1 items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
         <p className="eyebrow mb-2">Acceso</p>
-        <h1 className="mb-1 text-4xl leading-none tracking-tight font-[family-name:var(--font-display)]">
+        <h1 className="mb-1 text-4xl leading-none tracking-tight font-display">
           Inicia sesión
         </h1>
         <p className="mb-6 text-sm text-impakt-muted">
