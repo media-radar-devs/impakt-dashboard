@@ -7,6 +7,7 @@ type NavItem = { label: string; href: string };
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Inicio", href: "/dashboard" },
+  { label: "Integraciones", href: "/dashboard/integrations" },
   { label: "Términos", href: "/dashboard/terms" },
   { label: "Alertas", href: "/dashboard/notifications" },
   { label: "Noticias", href: "/dashboard/news" },
