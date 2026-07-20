@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function LoginForm() {
-  const router = useRouter();
+export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -16,22 +14,36 @@ export default function LoginForm() {
     setSubmitting(true);
     setError(null);
     try {
-      const res = await fetch("/api/proxy/auth/login", {
+      const res = await fetch("/api/proxy/auth/forgot-password", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setError(body.detail ?? `Error ${res.status}`);
+        setError(typeof body.detail === "string" ? body.detail : `Error ${res.status}`);
         return;
       }
-      router.replace("/dashboard");
-    } catch (err) {
-      setError((err as Error).message);
+      setDone(true);
+    } catch {
+      setError("No pudimos conectar. Inténtalo nuevamente.");
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (done) {
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-impakt-ink">
+          Si el correo existe, te enviamos un enlace para restablecer tu contraseña.
+          Revisa tu bandeja de entrada.
+        </p>
+        <Link href="/login" className="text-sm text-impakt-muted underline hover:text-impakt-ink">
+          Volver a iniciar sesión
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -51,21 +63,6 @@ export default function LoginForm() {
         />
       </div>
 
-      <div>
-        <label htmlFor="password" className="eyebrow block">
-          Contraseña
-        </label>
-        <input
-          id="password"
-          type="password"
-          required
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-ink focus:border-impakt-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-impakt-yellow focus-visible:ring-offset-1"
-        />
-      </div>
-
       {error && <p className="text-sm text-impakt-red">{error}</p>}
 
       <button
@@ -73,12 +70,12 @@ export default function LoginForm() {
         disabled={submitting}
         className="w-full rounded-md bg-impakt-ink px-4 py-2 text-sm font-medium text-impakt-paper hover:bg-impakt-yellow hover:text-impakt-ink disabled:opacity-50 disabled:hover:bg-impakt-ink disabled:hover:text-impakt-paper"
       >
-        {submitting ? "Entrando…" : "Iniciar sesión"}
+        {submitting ? "Enviando…" : "Enviar enlace"}
       </button>
 
       <p className="text-sm text-impakt-muted">
-        <Link href="/forgot-password" className="underline hover:text-impakt-ink">
-          ¿Olvidaste tu contraseña?
+        <Link href="/login" className="underline hover:text-impakt-ink">
+          Volver a iniciar sesión
         </Link>
       </p>
     </form>
