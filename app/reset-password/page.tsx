@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import ResetPasswordForm from "./reset-password-form";
 
-type SearchParams = Promise<{ token?: string }>;
+type SearchParams = Promise<{ token?: string | string[] }>;
 
 export default async function ResetPasswordPage({
   searchParams,
@@ -10,8 +10,9 @@ export default async function ResetPasswordPage({
   searchParams: SearchParams;
 }) {
   const { token } = await searchParams;
+  const tokenValue = Array.isArray(token) ? token[0] : token;
 
-  if (!token) {
+  if (!tokenValue) {
     return (
       <main className="flex flex-1 items-center justify-center px-6 py-16">
         <div className="max-w-md w-full space-y-4 text-center">
@@ -39,7 +40,7 @@ export default async function ResetPasswordPage({
         <p className="mb-6 text-sm text-impakt-muted">
           Elige una contraseña de al menos 8 caracteres.
         </p>
-        <ResetPasswordForm token={token} />
+        <ResetPasswordForm token={tokenValue} />
       </div>
     </main>
   );

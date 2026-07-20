@@ -20,12 +20,13 @@ export default function ForgotPasswordForm() {
         body: JSON.stringify({ email }),
       });
       if (!res.ok) {
-        setError(`Error ${res.status}`);
+        const body = await res.json().catch(() => ({}));
+        setError(typeof body.detail === "string" ? body.detail : `Error ${res.status}`);
         return;
       }
       setDone(true);
-    } catch (err) {
-      setError((err as Error).message);
+    } catch {
+      setError("No pudimos conectar. Inténtalo nuevamente.");
     } finally {
       setSubmitting(false);
     }
