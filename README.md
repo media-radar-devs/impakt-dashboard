@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Integración con Telegram
+
+El dashboard incluye una página de Integraciones para que usuarios autenticados conecten o reconecten Telegram. El flujo principal llama desde el navegador a `POST /api/proxy/auth/telegram-link-url` sin body; el proxy del dashboard lee la cookie `impakt_session` y adjunta el `Authorization: Bearer <token>` hacia el backend. El backend responde con una URL temporal de Telegram y el dashboard la abre con `window.location.href`.
+
+La URL y cualquier token incluido en ella se usan únicamente para redirigir a Telegram: el dashboard no los guarda en `localStorage`, `sessionStorage`, cookies ni otro almacenamiento persistente. Como fallback, la misma tarjeta permite generar un PIN mediante `POST /api/proxy/auth/request-link-code` con `{ "channel_type": "telegram" }` para enviarlo manualmente al bot.
+
+Actualmente el backend no expone `telegram_linked`, por lo que la UI no muestra un estado definitivo de “Telegram conectado” ni oculta las acciones si el usuario ya vinculó su cuenta.
