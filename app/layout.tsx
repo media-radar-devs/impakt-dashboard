@@ -19,7 +19,10 @@ const anton = Anton({
 });
 
 export const metadata: Metadata = {
-  title: "Impakt — Monitoreo de medios",
+  title: {
+    default: "Impakt — Monitoreo de medios",
+    template: "%s · Impakt",
+  },
   description: "Monitoreo de medios chilenos con alertas en tiempo real.",
 };
 

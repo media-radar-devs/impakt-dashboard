@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { fetchFromVarys, getSessionToken } from "../lib/session";
 import { Card, PageHeader } from "./_components/ui";
+
+export const metadata: Metadata = { title: "Inicio" };
 
 type UserProfile = {
   id: string;

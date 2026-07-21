@@ -1,4 +1,8 @@
+import type { Metadata } from "next";
+
 import LoginForm from "./login-form";
+
+export const metadata: Metadata = { title: "Inicia sesión" };
 
 export default function LoginPage() {
   return (

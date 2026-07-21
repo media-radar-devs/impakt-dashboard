@@ -1,4 +1,8 @@
+import type { Metadata } from "next";
+
 import RegisterForm from "./register-form";
+
+export const metadata: Metadata = { title: "Crea tu cuenta" };
 
 type SearchParams = Promise<{ token?: string; email?: string }>;
 

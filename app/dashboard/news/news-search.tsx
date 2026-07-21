@@ -8,12 +8,31 @@ import { Card, EmptyState } from "../_components/ui";
 
 const DEBOUNCE_MS = 300;
 const SNIPPET_LENGTH = 160;
+const PAGE_SIZE = 30;
+// Backend caps /me/news at limit=200.
+const MAX_LIMIT = 200;
+
+// Some sources store raw HTML in `content` — strip tags and decode the
+// entities that actually appear in feeds before showing a snippet.
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 function snippet(content: string | null): string | null {
   if (!content) return null;
-  const trimmed = content.trim();
-  if (trimmed.length <= SNIPPET_LENGTH) return trimmed;
-  return `${trimmed.slice(0, SNIPPET_LENGTH).trimEnd()}…`;
+  const text = stripHtml(content);
+  if (!text) return null;
+  if (text.length <= SNIPPET_LENGTH) return text;
+  return `${text.slice(0, SNIPPET_LENGTH).trimEnd()}…`;
 }
 
 export default function NewsSearch({
@@ -22,6 +41,7 @@ export default function NewsSearch({
   initialArticles: Article[];
 }) {
   const [query, setQuery] = useState("");
+  const [limit, setLimit] = useState(PAGE_SIZE);
   const [articles, setArticles] = useState<Article[]>(initialArticles);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,10 +53,11 @@ export default function NewsSearch({
     // newer request can't be clobbered by an in-flight older one.
     let cancelled = false;
 
-    // Empty query resets to the server-rendered list — done inside the timer so
-    // the effect never calls setState synchronously (cascading-render lint).
+    // First page without a query is the server-rendered list — done inside the
+    // timer so the effect never calls setState synchronously (cascading-render
+    // lint).
     const timer = setTimeout(async () => {
-      if (!trimmed) {
+      if (!trimmed && limit === PAGE_SIZE) {
         if (!cancelled) {
           setArticles(initialArticles);
           setError(null);
@@ -50,10 +71,11 @@ export default function NewsSearch({
         setError(null);
       }
       try {
-        const res = await fetch(
-          `/api/proxy/me/news?q=${encodeURIComponent(trimmed)}&limit=30`,
-          { signal: controller.signal },
-        );
+        const params = new URLSearchParams({ limit: String(limit) });
+        if (trimmed) params.set("q", trimmed);
+        const res = await fetch(`/api/proxy/me/news?${params}`, {
+          signal: controller.signal,
+        });
         if (!res.ok) {
           if (!cancelled) setError("No pudimos cargar las noticias.");
           return;
@@ -73,7 +95,10 @@ export default function NewsSearch({
       controller.abort();
       clearTimeout(timer);
     };
-  }, [query, initialArticles]);
+  }, [query, limit, initialArticles]);
+
+  // A full page suggests there may be more; a short page means we hit the end.
+  const canLoadMore = articles.length >= limit && limit < MAX_LIMIT;
 
   return (
     <div className="space-y-5">
@@ -85,7 +110,10 @@ export default function NewsSearch({
           id="news-search"
           type="search"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setLimit(PAGE_SIZE); // new search starts from the first page
+          }}
           placeholder="Buscar términos, frases…"
           className="w-full rounded-md border border-impakt-border bg-white px-3 py-2 text-sm text-impakt-ink focus:border-impakt-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-impakt-yellow focus-visible:ring-offset-1"
         />
@@ -97,14 +125,32 @@ export default function NewsSearch({
         <EmptyState>Sin resultados para tu búsqueda.</EmptyState>
       )}
 
-      {!loading && articles.length > 0 && (
-        <ul className="space-y-3">
+      {articles.length > 0 && (
+        // Keep the previous results visible (dimmed) while a new request is in
+        // flight — unmounting the list makes every keystroke flash a blank page.
+        <ul
+          aria-busy={loading}
+          className={`space-y-3 transition-opacity duration-150 ${
+            loading ? "pointer-events-none opacity-50" : ""
+          }`}
+        >
           {articles.map((article) => (
             <li key={article.id}>
               <ArticleCard article={article} />
             </li>
           ))}
         </ul>
+      )}
+
+      {canLoadMore && !error && (
+        <button
+          type="button"
+          onClick={() => setLimit((l) => Math.min(l + PAGE_SIZE, MAX_LIMIT))}
+          disabled={loading}
+          className="w-full rounded-md border border-impakt-border bg-white px-3 py-2 text-sm font-medium text-impakt-ink hover:border-impakt-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-impakt-yellow focus-visible:ring-offset-1 disabled:opacity-50"
+        >
+          {loading ? "Cargando…" : "Cargar más"}
+        </button>
       )}
     </div>
   );

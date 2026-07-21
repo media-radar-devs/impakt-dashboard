@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import ResetPasswordForm from "./reset-password-form";
+
+export const metadata: Metadata = { title: "Restablecer contraseña" };
 
 type SearchParams = Promise<{ token?: string | string[] }>;
 
