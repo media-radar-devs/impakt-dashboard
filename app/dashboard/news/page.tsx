@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { fetchFromVarys, getSessionToken } from "../../lib/session";
 import type { Article } from "../_components/types";
 import { PageHeader } from "../_components/ui";
 import NewsSearch from "./news-search";
+
+export const metadata: Metadata = { title: "Noticias" };
 
 export default async function NewsPage() {
   const token = await getSessionToken();

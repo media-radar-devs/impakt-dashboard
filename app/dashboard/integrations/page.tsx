@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { getSessionToken } from "../../lib/session";
 import { PageHeader } from "../_components/ui";
 import TelegramConnectCard from "./telegram-connect-card";
+
+export const metadata: Metadata = { title: "Integraciones" };
 
 export default async function IntegrationsPage() {
   const token = await getSessionToken();
