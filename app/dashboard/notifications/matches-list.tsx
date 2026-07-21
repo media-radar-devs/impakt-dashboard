@@ -107,7 +107,9 @@ function MatchCard({ match }: { match: Match }) {
         <p className="text-sm text-impakt-muted">(artículo no disponible)</p>
       )}
 
-      <p className="mt-1 text-xs text-impakt-muted">
+      {/* Intl output can differ between Node's ICU and the browser's —
+          keep the server text instead of failing hydration over spacing. */}
+      <p className="mt-1 text-xs text-impakt-muted" suppressHydrationWarning>
         {[article?.source, formatDate(match.created_at)]
           .filter(Boolean)
           .join(" · ")}
