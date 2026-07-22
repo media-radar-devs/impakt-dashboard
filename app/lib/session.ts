@@ -3,8 +3,11 @@
 
 import { cookies } from "next/headers";
 
+import { SESSION_COOKIE } from "./session-cookie";
+
 const VARYS_URL = process.env.VARYS_URL;
-export const SESSION_COOKIE = "impakt_session";
+
+export { SESSION_COOKIE };
 
 export async function getSessionToken(): Promise<string | null> {
   const store = await cookies();

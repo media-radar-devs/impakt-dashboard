@@ -1,16 +1,20 @@
 // Generic auth proxy. Every /api/proxy/auth/<path> from the browser is forwarded to
 // ${VARYS_URL}/api/auth/<path>. The real backend URL is never sent to the client.
 //
-// On responses that return { access_token, ... } (signup, login), we extract the
-// token and set it as an httpOnly cookie so subsequent requests can attach it
-// as a Bearer header automatically.
+// On responses that return { access_token, refresh_token, ... } (signup, login),
+// we extract both tokens and set them as httpOnly cookies: the access token so
+// subsequent requests can attach it as a Bearer header, and the refresh token so
+// the middleware can mint a new access token before it expires.
 
 import { NextRequest, NextResponse } from "next/server";
 
-import { SESSION_COOKIE } from "../../../../lib/session";
+import {
+  REFRESH_COOKIE,
+  SESSION_COOKIE,
+  sessionCookie,
+} from "../../../../lib/session-cookie";
 
 const VARYS_URL = process.env.VARYS_URL;
-const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days; refresh on login
 
 if (!VARYS_URL) {
   // Surface the misconfiguration loudly at boot rather than per-request.
@@ -32,9 +36,9 @@ async function forward(request: NextRequest, ctx: RouteContext): Promise<NextRes
   const contentType = request.headers.get("content-type");
   if (contentType) headers["content-type"] = contentType;
 
-  const sessionCookie = request.cookies.get(SESSION_COOKIE);
-  if (sessionCookie) {
-    headers["authorization"] = `Bearer ${sessionCookie.value}`;
+  const existingSession = request.cookies.get(SESSION_COOKIE);
+  if (existingSession) {
+    headers["authorization"] = `Bearer ${existingSession.value}`;
   }
 
   const body = request.method === "GET" || request.method === "HEAD"
@@ -60,20 +64,18 @@ async function forward(request: NextRequest, ctx: RouteContext): Promise<NextRes
     headers: { "content-type": upstream.headers.get("content-type") ?? "application/json" },
   });
 
-  // Auto-set the session cookie when the backend returned a fresh access_token.
+  // Auto-set the session cookies when the backend returned a fresh session.
   if (upstream.ok && (subpath === "signup" || subpath === "login")) {
     try {
-      const parsed = JSON.parse(responseText) as { access_token?: string };
+      const parsed = JSON.parse(responseText) as {
+        access_token?: string;
+        refresh_token?: string;
+      };
       if (parsed.access_token) {
-        response.cookies.set({
-          name: SESSION_COOKIE,
-          value: parsed.access_token,
-          httpOnly: true,
-          sameSite: "lax",
-          secure: process.env.NODE_ENV === "production",
-          path: "/",
-          maxAge: SESSION_MAX_AGE,
-        });
+        response.cookies.set(sessionCookie(SESSION_COOKIE, parsed.access_token));
+      }
+      if (parsed.refresh_token) {
+        response.cookies.set(sessionCookie(REFRESH_COOKIE, parsed.refresh_token));
       }
     } catch {
       // Non-JSON success body is unexpected here but not fatal.
